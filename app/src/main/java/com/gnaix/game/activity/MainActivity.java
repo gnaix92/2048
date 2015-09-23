@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
 import com.gnaix.game.widget.MainView;
@@ -16,7 +15,7 @@ import com.gnaix.game.widget.MainView;
  * @author xiangqing.xue
  * @date 15/9/22
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     //主页面
     private MainView mainView;
