@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v7.internal.widget.ViewUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -28,28 +28,34 @@ public class MainView extends View {
     public static boolean hasSaveState = false;
     //游戏模型
     private Game mGame;
+    public final int numCellTypes = 18;
 
     //资源
+    private Bitmap background = null;
     private Resources mResources;
-    //rectangle
     private Drawable backgroundRectangle;
     private Drawable lightUpRectangle;
     private Drawable fadeRectangle;
-    private Bitmap background = null;
+    //单元格
+    private BitmapDrawable[] bitmapCells = new BitmapDrawable[numCellTypes];
+    //弹窗提示
+    private BitmapDrawable loseGameOverlay;
+    private BitmapDrawable winGameContinueOverlay;
+    private BitmapDrawable winGameFinalOverlay;
 
-    /** 画笔 */
+    // 画笔
     private Paint mPaint = new Paint();
     private int textColor_black;
     private int textColor_while;
     private int textColor_brown;
 
-    /** 单元格大小 */
+    // 单元格大小
     private int cellSize;
-    /** 分割线宽度 */
+    // 分割线宽度
     private int gridWidth;
-    /** 图标大小 */
+    // 图标大小
     private int iconSize;
-    /** 字体大小 */
+    // 字体大小
     private float textSize;
     private float cellTextSize;
     private float titleTextSize;
@@ -57,33 +63,36 @@ public class MainView extends View {
     private int instructionsTextSize;
     private float headerTextSize;
     private float gameOverTextSize;
+
+    //间距
     private int textPaddingSize;
     private int iconPaddingSize;
-    /** board 坐标 */
+
+    // board 坐标
     private int startingX;
     private int endingX;
     private int startingY;
     private int endingY;
 
-    /** 绘制坐标 */
+    // 绘制坐标
     private int startYAll;
     private int endYAll;
 
-    /** title 坐标*/
+    // title 坐标
     private int titleStartYAll;
-    /** body 坐标*/
+    // body 坐标
     private int bodyStartYAll;
-    /** 最高分值标题长度 */
+    // 最高分值标题长度
     private int titleWidthHighScore;
-    /** 分值标题长度 */
+    // 分值标题长度
     private int titleWidthScore;
 
-    /** 按钮坐标 */
+    // 按钮坐标
     private int iconStartYAll;
     private int newGameStartX;
     private int undoStartX;
 
-    //时间
+    //time
     private long lastFPSTime = System.nanoTime();
     private long currentTiem = System.nanoTime();
 
@@ -208,7 +217,60 @@ public class MainView extends View {
      * 绘制单元格
      */
     private void createBitmapCells(){
+        int[] cellRectangleIds = getCellRectangleIds();
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        for(int i=0; i<numCellTypes; i++){
+            int value = (int) Math.pow(2, i);
+            mPaint.setTextSize(cellTextSize);
+            float tempTextSize = cellTextSize * cellSize * 0.9f / Math.max(cellSize * 0.9f, mPaint.measureText(String.valueOf(value)));
+            mPaint.setTextSize(tempTextSize);
+            Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            ViewUtil.drawDrawable(canvas, mResources.getDrawable(cellRectangleIds[i]), 0, 0, cellSize, cellSize);
+            drawCellText(canvas, value, 0, 0);
+            bitmapCells[i] = new BitmapDrawable(mResources, bitmap);
+        }
+    }
 
+    /**
+     * 获取单元格样式
+     * @return
+     */
+    private int[] getCellRectangleIds(){
+        int[] cellRectangleIds = new int[numCellTypes];
+        cellRectangleIds[0] = R.drawable.cell_rectangle;
+        cellRectangleIds[1] = R.drawable.cell_rectangle_2;
+        cellRectangleIds[2] = R.drawable.cell_rectangle_4;
+        cellRectangleIds[3] = R.drawable.cell_rectangle_8;
+        cellRectangleIds[4] = R.drawable.cell_rectangle_16;
+        cellRectangleIds[5] = R.drawable.cell_rectangle_32;
+        cellRectangleIds[6] = R.drawable.cell_rectangle_64;
+        cellRectangleIds[7] = R.drawable.cell_rectangle_128;
+        cellRectangleIds[8] = R.drawable.cell_rectangle_256;
+        cellRectangleIds[9] = R.drawable.cell_rectangle_512;
+        cellRectangleIds[10] = R.drawable.cell_rectangle_1024;
+        cellRectangleIds[11] = R.drawable.cell_rectangle_2048;
+        for(int i=12;i<numCellTypes; i++){
+            cellRectangleIds[i] = R.drawable.cell_rectangle_4096;
+        }
+        return cellRectangleIds;
+    }
+
+    /**
+     * 绘制单元格数字
+     * @param canvas
+     * @param value
+     * @param sX
+     * @param sY
+     */
+    private void drawCellText(Canvas canvas, int value, int sX, int sY){
+        int textShiftY = ViewUtil.centerText(mPaint);
+        if(value >= 8){
+            mPaint.setColor(textColor_while);
+        }else{
+            mPaint.setColor(textColor_black);
+        }
+        canvas.drawText(String.valueOf(value), cellSize/2, cellSize-textShiftY, mPaint);
     }
 
     /**
@@ -271,8 +333,8 @@ public class MainView extends View {
                 mResources.getDrawable(R.drawable.ic_action_refresh),
                 newGameStartX + iconPaddingSize,
                 iconStartYAll + iconPaddingSize,
-                newGameStartX +iconSize - iconPaddingSize,
-                iconStartYAll +iconSize - iconPaddingSize);
+                newGameStartX + iconSize - iconPaddingSize,
+                iconStartYAll + iconSize - iconPaddingSize);
     }
 
     /**
@@ -319,13 +381,7 @@ public class MainView extends View {
                 int sY = startingY + gridWidth + (cellSize + gridWidth) * j;
                 int eY = sY + cellSize;
 
-                ViewUtil.drawDrawable(
-                        canvas,
-                        cellRectangle,
-                        sX,
-                        sY,
-                        eX,
-                        eY);
+                ViewUtil.drawDrawable(canvas, cellRectangle, sX, sY, eX, eY);
             }
         }
     }
@@ -343,6 +399,35 @@ public class MainView extends View {
     }
 
 
+    /**
+     * 绘制各种情况弹窗
+     */
+    private void createOverlays(){
+        Bitmap bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        createEndGameState(canvas, true, true);
+        winGameContinueOverlay = new BitmapDrawable(mResources, bitmap);
+
+        bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        createEndGameState(canvas, true, false);
+        winGameFinalOverlay = new BitmapDrawable(mResources, bitmap);
+
+        bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        createEndGameState(canvas, false, false);
+        loseGameOverlay = new BitmapDrawable(mResources, bitmap);
+    }
+
+    /**
+     * 绘制弹窗
+     * @param canvas
+     * @param isWin
+     * @param showBtn
+     */
+    private void createEndGameState(Canvas canvas, boolean isWin, boolean showBtn){
+        
+    }
     /**
      * 绘制页面
      * @param canvas
