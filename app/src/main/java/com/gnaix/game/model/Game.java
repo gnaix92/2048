@@ -17,6 +17,9 @@ public class Game {
     public static final int numSquaresX = 4;
     public static final int numSquaresY = 4;
 
+    public static int highScore;
+    public static int score;
+
     public Game(Context context, MainView view){
 
     }

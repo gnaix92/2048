@@ -74,9 +74,9 @@ public class MainView extends View {
     private int startingY;
     private int endingY;
 
-    // 绘制坐标
-    private int startYAll;
-    private int endYAll;
+    // 计分区坐标
+    private int startScoreBoxY;
+    private int endScoreBoxY;
 
     // title 坐标
     private int titleStartYAll;
@@ -199,16 +199,17 @@ public class MainView extends View {
         int textShiftYAll2 = ViewUtil.centerText(mPaint);
 
         //计算分值菜单Y轴值
-        startYAll = (int) (startingY - cellSize * 1.5);
-        titleStartYAll = (int) (startYAll + textPaddingSize + titleTextSize / 2 - textShiftYAll1);
+        startScoreBoxY = (int) (startingY - cellSize * 1.5);
+        titleStartYAll = (int) (startScoreBoxY + textPaddingSize + titleTextSize / 2 - textShiftYAll1);
         bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + textShiftYAll1 + bodyTextSize / 2 - textShiftYAll2);
-        endYAll = bodyStartYAll + bodyTextSize / 2 + textShiftYAll2 + textPaddingSize;
+        endScoreBoxY = bodyStartYAll + bodyTextSize / 2 + textShiftYAll2 + textPaddingSize;
 
         //计算按钮坐标
-        iconStartYAll = (endYAll + startingY) / 2 - iconSize / 2;
+        iconStartYAll = (endScoreBoxY + startingY) / 2 - iconSize / 2;
         newGameStartX = endingX - iconSize;
         undoStartX = newGameStartX - iconSize * 3 / 2 - iconPaddingSize;
 
+        mPaint.setTextSize(titleTextSize);
         //计算分值标题长度
         titleWidthHighScore = (int) (mPaint.measureText(getResources().getString(R.string.high_score)));
         titleWidthScore = (int) (mPaint.measureText(getResources().getString(R.string.score)));
@@ -303,7 +304,7 @@ public class MainView extends View {
         mPaint.setTextAlign(Paint.Align.LEFT);
         mPaint.setColor(textColor_black);
         int textShiftY = ViewUtil.centerText(mPaint) * 2;
-        int headerStartY = startYAll - textShiftY;
+        int headerStartY = startScoreBoxY - textShiftY;
         canvas.drawText(mResources.getString(R.string.header), startingX, headerStartY, mPaint);
 
     }
@@ -484,7 +485,44 @@ public class MainView extends View {
      * @param canvas
      */
     private void drawScoreText(Canvas canvas) {
+        mPaint.setTextSize(bodyTextSize);
+        mPaint.setTextAlign(Paint.Align.CENTER);
 
+        //计算坐标
+        int bodyWidthHighScore = (int) mPaint.measureText(String.valueOf(Game.highScore));
+        int bodyWidthScore = (int) mPaint.measureText(String.valueOf(Game.score));
+
+        int boxWidthHighScore = Math.max(bodyWidthHighScore, titleWidthHighScore) + textPaddingSize * 2;
+        int boxWidthScore = Math.max(bodyWidthScore, titleWidthScore) + textPaddingSize * 2;
+
+        int boxMiddleHighScore = boxWidthHighScore / 2;
+        int boxMiddleScore = boxWidthScore / 2;
+
+        int endXHighScore = endingX;
+        int startXHighScore = endXHighScore - boxWidthHighScore;
+
+        int endXScore = startXHighScore - textPaddingSize;
+        int startXScore = endXScore - boxWidthScore;
+
+        //绘制最高分
+        backgroundRectangle.setBounds(startXHighScore, startScoreBoxY, endXHighScore, endScoreBoxY);
+        backgroundRectangle.draw(canvas);
+        mPaint.setTextSize(titleTextSize);
+        mPaint.setColor(textColor_brown);
+        canvas.drawText(mResources.getString(R.string.high_score), startXHighScore+boxMiddleHighScore, titleStartYAll, mPaint);
+        mPaint.setTextSize(bodyTextSize);
+        mPaint.setColor(textColor_while);
+        canvas.drawText(String.valueOf(Game.highScore), startXHighScore + boxMiddleHighScore, bodyStartYAll, mPaint);
+
+        //绘制得分
+        backgroundRectangle.setBounds(startXScore, startScoreBoxY, endXScore, endScoreBoxY);
+        backgroundRectangle.draw(canvas);
+        mPaint.setTextSize(titleTextSize);
+        mPaint.setColor(textColor_brown);
+        canvas.drawText(mResources.getString(R.string.score), startXScore + boxMiddleScore, titleStartYAll, mPaint);
+        mPaint.setTextSize(bodyTextSize);
+        mPaint.setColor(textColor_while);
+        canvas.drawText(String.valueOf(Game.highScore), startXScore + boxMiddleScore, bodyStartYAll, mPaint);
     }
 
 
