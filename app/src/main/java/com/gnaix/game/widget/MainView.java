@@ -136,12 +136,16 @@ public class MainView extends View {
      */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh){
-        super.onSizeChanged(w,h,oldw, oldh);
+        super.onSizeChanged(w, h, oldw, oldh);
         Log.d(TAG, "start onSizeChanged");
 
+        //计算坐标
         getLayout(w, h);
+        //创建单元格
         createBitmapCells();
+        //创建背景
         createBackgroundBitmp(w, h);
+        //创建弹窗提示
         createOverlays();
 
         Log.d(TAG, "end onSizeChanged");
@@ -426,7 +430,39 @@ public class MainView extends View {
      * @param showBtn
      */
     private void createEndGameState(Canvas canvas, boolean isWin, boolean showBtn){
-        
+        int width = endingX - startingX;
+        int height = endingY - startingY;
+        int middleX = width / 2;
+        int middleY = height / 2;
+
+        if(isWin){
+            lightUpRectangle.setAlpha(127);
+            ViewUtil.drawDrawable(canvas, lightUpRectangle, 0, 0, width, height);
+            //重置为255
+            lightUpRectangle.setAlpha(255);
+            mPaint.setAlpha(255);
+            mPaint.setTextAlign(Paint.Align.CENTER);
+            mPaint.setColor(textColor_while);
+            mPaint.setTextSize(gameOverTextSize);
+            int textShiftY = ViewUtil.centerText(mPaint);
+            canvas.drawText(mResources.getString(R.string.you_win), middleX, middleY - textShiftY, mPaint);
+            //绘制选择按钮
+            mPaint.setTextSize(bodyTextSize);
+            textShiftY = ViewUtil.centerText(mPaint);
+            String text = showBtn ? mResources.getString(R.string.go_on) : mResources.getString(R.string.for_now);
+            canvas.drawText(text, middleX, middleY+textPaddingSize*2 - textShiftY*2, mPaint);
+        }else{
+            fadeRectangle.setAlpha(127);
+            ViewUtil.drawDrawable(canvas, fadeRectangle, 0, 0, width, height);
+            //重置为255
+            fadeRectangle.setAlpha(255);
+            mPaint.setAlpha(255);
+            mPaint.setTextAlign(Paint.Align.CENTER);
+            mPaint.setColor(textColor_black);
+            mPaint.setTextSize(gameOverTextSize);
+            int textShiftY = ViewUtil.centerText(mPaint);
+            canvas.drawText(mResources.getString(R.string.game_over), middleX, middleY - textShiftY, mPaint);
+        }
     }
     /**
      * 绘制页面
