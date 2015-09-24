@@ -13,12 +13,15 @@ import com.gnaix.game.widget.MainView;
  */
 public class Game {
 
-    /** X * Y */
+    //单元格数
     public static final int numSquaresX = 4;
     public static final int numSquaresY = 4;
 
+    //分数
     public static int highScore;
     public static int score;
+
+
 
     public Game(Context context, MainView view){
 
