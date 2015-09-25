@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.gnaix.game.R;
+import com.gnaix.game.listener.TouchListener;
 import com.gnaix.game.model.Game;
 import com.gnaix.game.util.ViewUtil;
 
@@ -123,6 +124,8 @@ public class MainView extends View {
         Typeface font = Typeface.createFromAsset(mResources.getAssets(), "ClearSans-Bold.ttf");
         mPaint.setAntiAlias(true);
         mPaint.setTypeface(font);
+
+        setOnTouchListener(new TouchListener(this));
 
         Log.d(TAG, "end MainView");
     }
