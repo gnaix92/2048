@@ -21,6 +21,9 @@ public class Game {
     public static int highScore;
     public static int score;
 
+    //
+    public boolean isActive = true;
+
 
 
     public Game(Context context, MainView view){

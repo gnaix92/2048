@@ -28,7 +28,7 @@ public class MainView extends View {
     //是否保存状态
     public static boolean hasSaveState = false;
     //游戏模型
-    private Game mGame;
+    public Game mGame;
     public final int numCellTypes = 18;
 
     //资源
@@ -54,8 +54,8 @@ public class MainView extends View {
     private int cellSize;
     // 分割线宽度
     private int gridWidth;
-    // 图标大小
-    private int iconSize;
+    // 按钮大小
+    public int iconSize;
     // 字体大小
     private float textSize;
     private float cellTextSize;
@@ -70,10 +70,10 @@ public class MainView extends View {
     private int iconPaddingSize;
 
     // board 坐标
-    private int startingX;
-    private int endingX;
-    private int startingY;
-    private int endingY;
+    public int startingX;
+    public int endingX;
+    public int startingY;
+    public int endingY;
 
     // 计分区坐标
     private int startScoreBoxY;
@@ -89,9 +89,9 @@ public class MainView extends View {
     private int titleWidthScore;
 
     // 按钮坐标
-    private int iconStartYAll;
-    private int newGameStartX;
-    private int undoStartX;
+    public int iconStartYAll;
+    public int newGameStartX;
+    public int undoStartX;
 
     //time
     private long lastFPSTime = System.nanoTime();
