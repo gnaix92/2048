@@ -126,6 +126,7 @@ public class MainView extends View {
         mPaint.setTypeface(font);
 
         setOnTouchListener(new TouchListener(this));
+        mGame.newGame();
 
         Log.d(TAG, "end MainView");
     }
